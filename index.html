@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Hostel Complaint Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">🏢</div>
+            <h1>Hostel Care Portal</h1>
+            <p>Unified Complaint & Maintenance Management System</p>
+        </div>
+
+        <!-- Notification Message Box -->
+        <div id="authAlert" class="alert alert-info" style="display: none;">
+            <span id="alertMessage">Please enter your credentials.</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+
+        <!-- Quick Demo Credentials Box -->
+        <div class="demo-box">
+            <div class="demo-box-title">
+                <span>⚡ Click to Auto-fill Demo Login</span>
+            </div>
+            <div class="demo-buttons">
+                <button type="button" class="demo-btn" id="fillWardenBtn">👔 Warden (warden1)</button>
+                <button type="button" class="demo-btn" id="fillStudentBtn">🎓 Sample Student (student1)</button>
+            </div>
+        </div>
+
+        <!-- Login Form in Pure HTML -->
+        <form id="htmlLoginForm">
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Enter your registered username" 
+                    required 
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter your password" 
+                    required 
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div style="margin-top: 24px;">
+                <button type="submit" class="btn btn-primary btn-full" style="padding: 12px;">
+                    Sign In to Dashboard &rarr;
+                </button>
+            </div>
+        </form>
+
+        <!-- New Student Registration Call To Action -->
+        <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid #e2e8f0; text-align: center;">
+            <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Are you a new hosteller without an account?</p>
+            <a href="register.html" class="btn btn-accent btn-full" style="text-decoration: none; padding: 10px;">
+                ✨ Register as New Student &rarr;
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #64748b;">
+            College Web Programming Mini Project &bull; HTML5, CSS3 & JavaScript
+        </div>
+    </div>
+
+    <script>
+        // Demo Autofill Buttons
+        document.getElementById('fillStudentBtn').addEventListener('click', function() {
+            document.getElementById('username').value = 'student1';
+            document.getElementById('password').value = 'student123';
+        });
+
+        document.getElementById('fillWardenBtn').addEventListener('click', function() {
+            document.getElementById('username').value = 'warden1';
+            document.getElementById('password').value = 'warden123';
+        });
+
+        // Form Login Handler
+        document.getElementById('htmlLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const alertBox = document.getElementById('authAlert');
+            const alertMsg = document.getElementById('alertMessage');
+
+            // 1. Check Warden Default Account
+            if (u === 'warden1' && p === 'warden123') {
+                localStorage.setItem('currentUser', JSON.stringify({
+                    name: 'Mr. Rajesh Kumar',
+                    username: 'warden1',
+                    role: 'warden',
+                    roll_number: 'N/A',
+                    room_number: 'Warden Office',
+                    hostel_block: 'Admin Block'
+                }));
+                window.location.href = 'warden.html';
+                return;
+            }
+
+            // 2. Check Sample Student Account
+            if (u === 'student1' && p === 'student123') {
+                localStorage.setItem('currentUser', JSON.stringify({
+                    name: 'Rahul Sharma',
+                    username: 'student1',
+                    role: 'student',
+                    roll_number: '21CS101',
+                    room_number: 'B-204',
+                    hostel_block: 'Block B'
+                }));
+                window.location.href = 'student.html';
+                return;
+            }
+
+            // 3. Check dynamically registered users from localStorage!
+            const registeredUsers = JSON.parse(localStorage.getItem('hostel_registered_users') || '[]');
+            const foundUser = registeredUsers.find(user => user.username.toLowerCase() === u.toLowerCase() && user.password === p);
+
+            if (foundUser) {
+                localStorage.setItem('currentUser', JSON.stringify(foundUser));
+                window.location.href = 'student.html';
+                return;
+            }
+
+            // Not found
+            alertBox.className = 'alert alert-danger';
+            alertBox.style.display = 'flex';
+            alertMsg.textContent = 'Invalid username or password! You can register a new account using the button below.';
+        });
+    </script>
+</body>
+</html>

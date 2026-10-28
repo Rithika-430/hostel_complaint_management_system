@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Hostel Complaint Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <a href="student.html" class="nav-brand">
+            <span class="nav-brand-icon">🏢</span>
+            <div class="nav-brand-text">
+                <h2>Hostel Care</h2>
+                <span>Student Grievance Portal (HTML5)</span>
+            </div>
+        </a>
+
+        <div class="nav-user-info">
+            <div class="user-badge">
+                <div class="user-name" id="navStudentName">Student</div>
+                <div class="user-role" id="navRollNumber">Roll: N/A</div>
+            </div>
+            <a href="index.html" class="btn-logout" title="Sign out of your session">
+                <span>Logout</span> &rarr;
+            </a>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <!-- Notification Alert -->
+        <div id="flashAlert" class="alert alert-success" style="display: none;">
+            <span id="flashMessage">Notification message</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div>
+                <h1>Welcome, <span id="bannerStudentName">Student</span>! 👋</h1>
+                <p>Register, track, and monitor hostel maintenance requests with urgency tagging.</p>
+            </div>
+            <div class="student-meta-pill">
+                <strong id="pillBlock">Block A</strong> &bull; Room: <strong id="pillRoom">B-204</strong> &bull; Roll: <strong id="pillRoll">21CS101</strong>
+            </div>
+        </div>
+
+        <!-- Notice Board / Announcements -->
+        <div class="notice-board-card">
+            <div class="notice-board-header">
+                <span>📢 Official Hostel Announcements</span>
+            </div>
+            <div class="notice-board-body" id="noticesList">
+                <div class="notice-item">
+                    <h4>🚰 Water Tank Cleaning Schedule</h4>
+                    <p>Water tanks in Block A & B will be cleaned this Saturday from 9:00 AM to 1:00 PM. Water supply will be paused during this period.</p>
+                    <span class="notice-meta">Posted by Chief Warden &bull; Recent</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaint Status Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">📋</div>
+                <div class="stat-details">
+                    <h3 id="statTotal">0</h3>
+                    <span>Total Submitted</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon pending">⏳</div>
+                <div class="stat-details">
+                    <h3 id="statPending">0</h3>
+                    <span>Pending</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon progress">⚙️</div>
+                <div class="stat-details">
+                    <h3 id="statProgress">0</h3>
+                    <span>In Progress</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon resolved">✅</div>
+                <div class="stat-details">
+                    <h3 id="statResolved">0</h3>
+                    <span>Resolved</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Submit New Complaint Form -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>✍️</span> Register New Hostel Complaint
+                </div>
+                <span style="font-size: 12px; color: #64748b;">All issues tracked directly by the Chief Warden</span>
+            </div>
+            <div class="card-body">
+                <form id="htmlComplaintForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="student_name">Student Name</label>
+                            <input type="text" id="student_name" readonly disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="roll_number">Roll Number</label>
+                            <input type="text" id="roll_number" readonly disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="room_number">Room Number <span class="required">*</span></label>
+                            <input type="text" id="room_number" name="room_number" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Complaint Category <span class="required">*</span></label>
+                            <select id="category" name="category" required>
+                                <option value="" disabled selected>-- Select Category --</option>
+                                <option value="Electrical">⚡ Electrical (Fan, Light, Switchboard, AC)</option>
+                                <option value="Plumbing">🚰 Plumbing (Tap leak, Flush, Shower, Pipe)</option>
+                                <option value="Cleaning">🧹 Cleaning (Washroom, Corridor, Room)</option>
+                                <option value="Furniture">🪑 Furniture (Bed, Study Table, Cupboard, Lock)</option>
+                                <option value="Internet">📶 Internet / Wi-Fi (No signal, Speed)</option>
+                                <option value="Other">📌 Other Maintenance Issues</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="priority">Urgency / Priority Level <span class="required">*</span></label>
+                            <select id="priority" name="priority" required>
+                                <option value="Low">🟢 Low — Minor inconvenience (can wait 2-3 days)</option>
+                                <option value="Medium" selected>🔵 Medium — Regular maintenance issue</option>
+                                <option value="High">🟠 High — Severely affecting daily activity</option>
+                                <option value="Urgent">🔴 Urgent / Emergency — Water leak, short circuit, safety issue</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="description">Complaint Description <span class="required">*</span></label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                rows="3" 
+                                maxlength="500" 
+                                placeholder="Describe the problem clearly (e.g. Ceiling fan in room is making loud buzzing noise and not rotating smoothly)..." 
+                                required
+                            ></textarea>
+                            <div class="char-counter">
+                                <span id="charCount">0</span> / 500 characters
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <button type="submit" class="btn btn-primary">
+                            <span>Submit Complaint</span> &rarr;
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section 2: View Logged-in Student's Complaints -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>📑</span> My Submitted Complaints History
+                </div>
+                <div style="font-size: 13px; color: #64748b;" id="recordCountText">
+                    Showing 0 record(s)
+                </div>
+            </div>
+
+            <div class="card-body" style="padding: 0;">
+                <div class="table-responsive">
+                    <table class="custom-table" id="studentComplaintsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Description</th>
+                                <th>Warden Remarks</th>
+                                <th>Submitted On</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="studentEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📭</div>
+                    <h3>No Complaints Found</h3>
+                    <p>You have not submitted any complaints yet. Use the form above to report any issue.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Slip Modal -->
+    <div id="slipModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; max-width: 600px; width: 100%; border-radius: 12px; padding: 28px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #1e3a8a;">🏢 Hostel Complaint Acknowledgement Slip</h3>
+                <button onclick="document.getElementById('slipModal').style.display='none'" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
+            </div>
+            <div id="slipModalContent"></div>
+            <div style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="window.print()" class="btn btn-sm btn-primary">🖨️ Print Slip</button>
+                <button onclick="document.getElementById('slipModal').style.display='none'" class="btn btn-sm btn-outline">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        Hostel Complaint Management System &bull; College Web Programming Mini Project (HTML5)
+    </footer>
+
+    <script>
+        // Load logged in user
+        let user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!user) {
+            user = {
+                name: 'Rahul Sharma',
+                roll_number: '21CS101',
+                hostel_block: 'Block B',
+                room_number: 'B-204',
+                username: 'student1'
+            };
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        }
+
+        document.getElementById('navStudentName').textContent = user.name;
+        document.getElementById('navRollNumber').textContent = `Roll: ${user.roll_number}`;
+        document.getElementById('bannerStudentName').textContent = user.name;
+        document.getElementById('pillBlock').textContent = user.hostel_block || 'Block A';
+        document.getElementById('pillRoom').textContent = user.room_number || 'B-204';
+        document.getElementById('pillRoll').textContent = user.roll_number;
+
+        document.getElementById('student_name').value = user.name;
+        document.getElementById('roll_number').value = user.roll_number;
+        document.getElementById('room_number').value = user.room_number || '';
+
+        // Default initial complaints seed
+        const defaultComplaints = [
+            {
+                id: 1,
+                student_name: 'Rahul Sharma',
+                roll_number: '21CS101',
+                hostel_block: 'Block B',
+                room_number: 'B-204',
+                category: 'Electrical',
+                priority: 'High',
+                description: 'Ceiling fan in room B-204 is making an unusually loud noise and rotating very slowly.',
+                status: 'Pending',
+                warden_remark: '',
+                created_at: new Date(Date.now() - 3600000 * 24).toLocaleString()
+            },
+            {
+                id: 2,
+                student_name: 'Rahul Sharma',
+                roll_number: '21CS101',
+                hostel_block: 'Block B',
+                room_number: 'B-204',
+                category: 'Plumbing',
+                priority: 'Urgent',
+                description: 'Water tap in bathroom attached to room B-204 is leaking continuously. Washer replacement required.',
+                status: 'In Progress',
+                warden_remark: 'Plumber Ramesh assigned. Scheduled today at 4:30 PM.',
+                created_at: new Date(Date.now() - 3600000 * 12).toLocaleString()
+            }
+        ];
+
+        function getComplaints() {
+            let data = localStorage.getItem('hostel_complaints');
+            if (!data) {
+                localStorage.setItem('hostel_complaints', JSON.stringify(defaultComplaints));
+                return defaultComplaints;
+            }
+            return JSON.parse(data);
+        }
+
+        function saveComplaints(complaints) {
+            localStorage.setItem('hostel_complaints', JSON.stringify(complaints));
+        }
+
+        // Render Student Dashboard
+        function renderStudentDashboard() {
+            const allComplaints = getComplaints();
+            // Filter complaints belonging to this student
+            const myComplaints = allComplaints.filter(c => c.roll_number === user.roll_number || c.student_name === user.name);
+
+            let total = myComplaints.length;
+            let pending = 0;
+            let progress = 0;
+            let resolved = 0;
+
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+
+            myComplaints.forEach(c => {
+                if (c.status === 'Pending') pending++;
+                else if (c.status === 'In Progress') progress++;
+                else if (c.status === 'Resolved') resolved++;
+
+                const statusClass = 'status-' + c.status.toLowerCase().replace(' ', '-');
+                const priorityClass = 'priority-' + (c.priority || 'medium').toLowerCase();
+                const remarkHtml = c.warden_remark ? 
+                    `<div class="warden-remark-box">💬 <strong>Warden:</strong> ${escapeHtml(c.warden_remark)}</div>` : 
+                    `<span style="font-size: 12px; color: #94a3b8; font-style: italic;">Awaiting warden review</span>`;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="complaint-id">#CMP-${String(c.id).padStart(3, '0')}</span></td>
+                    <td><span class="complaint-category">${escapeHtml(c.category)}</span></td>
+                    <td><span class="priority-badge ${priorityClass}">${escapeHtml(c.priority || 'Medium')}</span></td>
+                    <td><div class="complaint-desc">${escapeHtml(c.description)}</div></td>
+                    <td>${remarkHtml}</td>
+                    <td><span class="date-text">${c.created_at}</span></td>
+                    <td><span class="status-badge ${statusClass}">${escapeHtml(c.status)}</span></td>
+                    <td>
+                        <button onclick="openSlip(${c.id})" class="btn btn-sm btn-outline" style="font-size: 11px;">🖨️ Slip</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statProgress').textContent = progress;
+            document.getElementById('statResolved').textContent = resolved;
+            document.getElementById('recordCountText').textContent = `Showing ${total} record(s)`;
+
+            const emptyState = document.getElementById('studentEmptyState');
+            if (total === 0) {
+                emptyState.style.display = 'block';
+                document.getElementById('studentComplaintsTable').style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                document.getElementById('studentComplaintsTable').style.display = 'table';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        // Live Character Counter
+        const descEl = document.getElementById('description');
+        const charCountEl = document.getElementById('charCount');
+        descEl.addEventListener('input', function() {
+            charCountEl.textContent = this.value.length;
+            charCountEl.style.color = (this.value.length > 500) ? '#ef4444' : '#94a3b8';
+        });
+
+        // Form Submit
+        document.getElementById('htmlComplaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const category = document.getElementById('category').value;
+            const priority = document.getElementById('priority').value;
+            const room = document.getElementById('room_number').value.trim();
+            const description = descEl.value.trim();
+
+            if (!category) {
+                alert('Please select a category.');
+                return;
+            }
+            if (description.length < 10) {
+                alert('Please enter at least 10 characters.');
+                return;
+            }
+
+            const complaints = getComplaints();
+            const nextId = complaints.length > 0 ? Math.max(...complaints.map(c => c.id)) + 1 : 1;
+
+            const newComplaint = {
+                id: nextId,
+                student_name: user.name,
+                roll_number: user.roll_number,
+                hostel_block: user.hostel_block || 'Block A',
+                room_number: room,
+                category: category,
+                priority: priority,
+                description: description,
+                status: 'Pending',
+                warden_remark: '',
+                created_at: new Date().toLocaleString()
+            };
+
+            complaints.unshift(newComplaint);
+            saveComplaints(complaints);
+
+            descEl.value = '';
+            document.getElementById('category').selectedIndex = 0;
+            charCountEl.textContent = '0';
+
+            const alertBox = document.getElementById('flashAlert');
+            const alertMsg = document.getElementById('flashMessage');
+            alertBox.className = 'alert alert-success';
+            alertBox.style.display = 'flex';
+            alertMsg.textContent = `✅ Your complaint #CMP-${String(nextId).padStart(3, '0')} [Priority: ${priority}] has been lodged successfully!`;
+
+            renderStudentDashboard();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Open Slip Modal
+        window.openSlip = function(id) {
+            const complaints = getComplaints();
+            const c = complaints.find(item => item.id === id);
+            if (!c) return;
+
+            const modal = document.getElementById('slipModal');
+            const content = document.getElementById('slipModalContent');
+
+            content.innerHTML = `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px; font-size: 13px;">
+                    <p style="margin: 4px 0;"><strong>Complaint ID:</strong> #CMP-${String(c.id).padStart(3, '0')}</p>
+                    <p style="margin: 4px 0;"><strong>Student Name:</strong> ${escapeHtml(c.student_name)} (Roll: ${escapeHtml(c.roll_number)})</p>
+                    <p style="margin: 4px 0;"><strong>Hostel & Room:</strong> ${escapeHtml(c.hostel_block)} - Room ${escapeHtml(c.room_number)}</p>
+                    <p style="margin: 4px 0;"><strong>Category & Urgency:</strong> ${escapeHtml(c.category)} (${escapeHtml(c.priority || 'Medium')})</p>
+                    <p style="margin: 4px 0;"><strong>Submitted On:</strong> ${c.created_at}</p>
+                    <p style="margin: 4px 0;"><strong>Current Status:</strong> <span style="font-weight: 700; color: #1e3a8a;">${escapeHtml(c.status)}</span></p>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <strong>Complaint Description:</strong>
+                    <p style="margin-top: 4px; font-size: 13px; color: #334155;">${escapeHtml(c.description)}</p>
+                </div>
+                ${c.warden_remark ? `<div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 10px; border-radius: 6px; font-size: 13px; color: #166534;"><strong>Warden Remark:</strong> ${escapeHtml(c.warden_remark)}</div>` : ''}
+            `;
+
+            modal.style.display = 'flex';
+        };
+
+        renderStudentDashboard();
+    </script>
+</body>
+</html>

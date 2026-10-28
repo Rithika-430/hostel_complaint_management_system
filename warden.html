@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warden Dashboard - Hostel Complaint Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <a href="warden.html" class="nav-brand">
+            <span class="nav-brand-icon">🏢</span>
+            <div class="nav-brand-text">
+                <h2>Hostel Care</h2>
+                <span>Chief Warden Administration (HTML5)</span>
+            </div>
+        </a>
+
+        <div class="nav-user-info">
+            <div class="user-badge">
+                <div class="user-name">Mr. Rajesh Kumar</div>
+                <div class="user-role">Hostel Administrator</div>
+            </div>
+            <a href="index.html" class="btn-logout" title="Sign out of your session">
+                <span>Logout</span> &rarr;
+            </a>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <!-- Flash Alert -->
+        <div id="wardenAlert" class="alert alert-success" style="display: none;">
+            <span id="wardenAlertMsg">Action performed successfully.</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div>
+                <h1>Warden Administration Hub 👔</h1>
+                <p>Track student complaints, prioritize urgent items, add resolution remarks, and publish notices.</p>
+            </div>
+            <div class="student-meta-pill">
+                Administrator: <strong>Mr. Rajesh Kumar</strong>
+            </div>
+        </div>
+
+        <!-- Overall Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">📊</div>
+                <div class="stat-details">
+                    <h3 id="wardenTotal">0</h3>
+                    <span>Total Complaints</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon pending">⏳</div>
+                <div class="stat-details">
+                    <h3 id="wardenPending">0</h3>
+                    <span>Pending Action</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon progress">🔧</div>
+                <div class="stat-details">
+                    <h3 id="wardenProgress">0</h3>
+                    <span>In Progress</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon resolved">✅</div>
+                <div class="stat-details">
+                    <h3 id="wardenResolved">0</h3>
+                    <span>Resolved</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Publish Notice Card -->
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>📢</span> Post Announcement to Students Notice Board
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="postNoticeForm" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 14px;">
+                        <input type="text" id="noticeTitle" placeholder="Notice Title (e.g. 🚰 Water Tank Cleaning Notice)" required>
+                        <input type="text" id="noticeContent" placeholder="Notice description or guidelines for students..." required>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            📢 Publish Notice Now
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Complaints Table Panel -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>📋</span> All Student Complaints & Grievances
+                </div>
+                <div style="font-size: 13px; color: #64748b;" id="filterCountNotice">
+                    Showing complaints
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Toolbar: Filter Pills and Real-time Search -->
+                <div class="toolbar-container">
+                    <div class="filter-pills">
+                        <button class="filter-pill active" onclick="setFilter('all', this)" id="pillAll">All</button>
+                        <button class="filter-pill" onclick="setFilter('Urgent', this)" id="pillUrgent" style="border-color: #fca5a5; color: #b91c1c;">🚨 Urgent</button>
+                        <button class="filter-pill" onclick="setFilter('Pending', this)" id="pillPending">⏳ Pending</button>
+                        <button class="filter-pill" onclick="setFilter('In Progress', this)" id="pillProgress">⚙️ In Progress</button>
+                        <button class="filter-pill" onclick="setFilter('Resolved', this)" id="pillResolved">✅ Resolved</button>
+                    </div>
+
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input 
+                            type="text" 
+                            id="htmlSearchInput" 
+                            class="search-input" 
+                            placeholder="Live filter by student, roll, room..."
+                        >
+                    </div>
+                </div>
+
+                <!-- Complaints Table -->
+                <div class="table-responsive">
+                    <table class="custom-table" id="wardenComplaintsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student Details</th>
+                                <th>Block & Room</th>
+                                <th>Category & Urgency</th>
+                                <th>Complaint Description</th>
+                                <th>Submitted On</th>
+                                <th>Status</th>
+                                <th>Warden Remarks & Status Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wardenTableBody">
+                            <!-- Populated dynamically via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="wardenEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📭</div>
+                    <h3>No Complaints Found</h3>
+                    <p>No complaints match the currently selected filter or search keyword.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        Hostel Complaint Management System &bull; College Web Programming Mini Project (HTML5)
+    </footer>
+
+    <script>
+        const defaultComplaints = [
+            {
+                id: 1,
+                student_name: 'Rahul Sharma',
+                roll_number: '21CS101',
+                hostel_block: 'Block B',
+                room_number: 'B-204',
+                category: 'Electrical',
+                priority: 'High',
+                description: 'Ceiling fan in room B-204 is making an unusually loud noise and rotating very slowly.',
+                status: 'Pending',
+                warden_remark: '',
+                created_at: new Date(Date.now() - 3600000 * 24).toLocaleString()
+            },
+            {
+                id: 2,
+                student_name: 'Rahul Sharma',
+                roll_number: '21CS101',
+                hostel_block: 'Block B',
+                room_number: 'B-204',
+                category: 'Plumbing',
+                priority: 'Urgent',
+                description: 'Water tap in bathroom attached to room B-204 is leaking continuously. Washer replacement required.',
+                status: 'In Progress',
+                warden_remark: 'Plumber Ramesh assigned. Scheduled today at 4:30 PM.',
+                created_at: new Date(Date.now() - 3600000 * 12).toLocaleString()
+            },
+            {
+                id: 3,
+                student_name: 'Sneha Patel',
+                roll_number: '21CS102',
+                hostel_block: 'Block A',
+                room_number: 'A-108',
+                category: 'Internet',
+                priority: 'Medium',
+                description: 'Wi-Fi connectivity keeps dropping frequently on Block A first floor near room A-108.',
+                status: 'Resolved',
+                warden_remark: 'Router firmware upgraded and range extender added.',
+                created_at: new Date(Date.now() - 3600000 * 48).toLocaleString()
+            }
+        ];
+
+        function getComplaints() {
+            let data = localStorage.getItem('hostel_complaints');
+            if (!data) {
+                localStorage.setItem('hostel_complaints', JSON.stringify(defaultComplaints));
+                return defaultComplaints;
+            }
+            return JSON.parse(data);
+        }
+
+        function saveComplaints(complaints) {
+            localStorage.setItem('hostel_complaints', JSON.stringify(complaints));
+        }
+
+        let currentFilter = 'all';
+
+        function setFilter(filter, el) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderWardenDashboard();
+        }
+
+        function updateComplaintRecord(id) {
+            const selectEl = document.getElementById(`statusSelect_${id}`);
+            const remarkEl = document.getElementById(`remarkInput_${id}`);
+            const newStatus = selectEl.value;
+            const newRemark = remarkEl.value.trim();
+
+            const complaints = getComplaints();
+            const target = complaints.find(c => c.id === id);
+            if (target) {
+                target.status = newStatus;
+                target.warden_remark = newRemark;
+                saveComplaints(complaints);
+
+                const alertBox = document.getElementById('wardenAlert');
+                const alertMsg = document.getElementById('wardenAlertMsg');
+                alertBox.className = 'alert alert-success';
+                alertBox.style.display = 'flex';
+                alertMsg.textContent = `✅ Complaint #CMP-${String(id).padStart(3, '0')} updated to '${newStatus}' with remarks saved!`;
+
+                renderWardenDashboard();
+            }
+        }
+
+        // Post Notice
+        document.getElementById('postNoticeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const t = document.getElementById('noticeTitle').value.trim();
+            const c = document.getElementById('noticeContent').value.trim();
+
+            alert(`📢 Notice Published: "${t}"`);
+            document.getElementById('noticeTitle').value = '';
+            document.getElementById('noticeContent').value = '';
+        });
+
+        function renderWardenDashboard() {
+            const all = getComplaints();
+            const searchText = document.getElementById('htmlSearchInput').value.toLowerCase().trim();
+
+            let total = all.length;
+            let pending = 0;
+            let progress = 0;
+            let resolved = 0;
+            let urgent = 0;
+
+            all.forEach(c => {
+                if (c.status === 'Pending') pending++;
+                else if (c.status === 'In Progress') progress++;
+                else if (c.status === 'Resolved') resolved++;
+
+                if (c.priority === 'Urgent' && c.status !== 'Resolved') urgent++;
+            });
+
+            document.getElementById('wardenTotal').textContent = total;
+            document.getElementById('wardenPending').textContent = pending;
+            document.getElementById('wardenProgress').textContent = progress;
+            document.getElementById('wardenResolved').textContent = resolved;
+
+            document.getElementById('pillAll').textContent = `All (${total})`;
+            document.getElementById('pillUrgent').textContent = `🚨 Urgent (${urgent})`;
+            document.getElementById('pillPending').textContent = `⏳ Pending (${pending})`;
+            document.getElementById('pillProgress').textContent = `⚙️ In Progress (${progress})`;
+            document.getElementById('pillResolved').textContent = `✅ Resolved (${resolved})`;
+
+            // Filter logic
+            let filtered = all.filter(c => {
+                if (currentFilter === 'Urgent') {
+                    if (c.priority !== 'Urgent') return false;
+                } else if (currentFilter !== 'all' && c.status !== currentFilter) {
+                    return false;
+                }
+
+                if (searchText) {
+                    const rowText = `${c.student_name} ${c.roll_number} ${c.room_number} ${c.hostel_block} ${c.category} ${c.description} ${c.status} ${c.priority}`.toLowerCase();
+                    if (!rowText.includes(searchText)) return false;
+                }
+                return true;
+            });
+
+            const tbody = document.getElementById('wardenTableBody');
+            tbody.innerHTML = '';
+
+            filtered.forEach(c => {
+                const statusClass = 'status-' + c.status.toLowerCase().replace(' ', '-');
+                const priorityClass = 'priority-' + (c.priority || 'medium').toLowerCase();
+                const row = document.createElement('tr');
+                row.className = 'complaint-row';
+                row.innerHTML = `
+                    <td>
+                        <span class="complaint-id">#CMP-${String(c.id).padStart(3, '0')}</span>
+                    </td>
+                    <td>
+                        <strong style="color: #0f172a;">${escapeHtml(c.student_name)}</strong><br>
+                        <span style="font-size: 12px; color: #64748b;">Roll: ${escapeHtml(c.roll_number)}</span>
+                    </td>
+                    <td>
+                        <strong style="color: #1e3a8a;">${escapeHtml(c.room_number)}</strong><br>
+                        <span style="font-size: 11px; color: #64748b;">${escapeHtml(c.hostel_block || 'Block A')}</span>
+                    </td>
+                    <td>
+                        <span class="complaint-category">${escapeHtml(c.category)}</span><br>
+                        <span class="priority-badge ${priorityClass}" style="margin-top: 4px;">
+                            ${escapeHtml(c.priority || 'Medium')}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="complaint-desc">${escapeHtml(c.description)}</div>
+                    </td>
+                    <td><span class="date-text">${c.created_at}</span></td>
+                    <td>
+                        <span class="status-badge ${statusClass}">${escapeHtml(c.status)}</span>
+                    </td>
+                    <td style="min-width: 250px;">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <div style="display: flex; gap: 6px;">
+                                <select id="statusSelect_${c.id}" class="status-update-select" style="flex: 1;">
+                                    <option value="Pending" ${c.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="In Progress" ${c.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="Resolved" ${c.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                                </select>
+                                <button onclick="updateComplaintRecord(${c.id})" class="btn btn-sm btn-accent">Save</button>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="remarkInput_${c.id}" 
+                                value="${escapeHtml(c.warden_remark || '')}" 
+                                placeholder="Add remark (e.g. Plumber assigned)" 
+                                style="font-size: 12px; padding: 5px 8px; border-radius: 4px;"
+                            >
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('filterCountNotice').textContent = `Showing ${filtered.length} record(s) (Filter: ${currentFilter})`;
+
+            const emptyState = document.getElementById('wardenEmptyState');
+            if (filtered.length === 0) {
+                emptyState.style.display = 'block';
+                document.getElementById('wardenComplaintsTable').style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                document.getElementById('wardenComplaintsTable').style.display = 'table';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        document.getElementById('htmlSearchInput').addEventListener('input', renderWardenDashboard);
+
+        renderWardenDashboard();
+    </script>
+</body>
+</html>
